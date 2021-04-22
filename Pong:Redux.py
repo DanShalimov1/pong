@@ -1,7 +1,16 @@
 import turtle
-import pyttsx3
+from gtts import gTTS
+import playsound
 
-play_until = 2
+def speak(text):
+    tts = gTTS(text=text, lang="en")
+    filename = "voice.mp3"
+    tts.save(filename)
+    playsound.playsound(filename)
+
+play_until = 5
+total_rounds = 2
+say = ""
 wn = turtle.Screen()
 wn.title("Pong:Redux")
 wn.bgcolor("black")
@@ -11,6 +20,9 @@ wn.tracer(0)
 # Score
 score_a = 0
 score_b = 0
+
+# Round
+round = 1
 
 # Paddle A
 paddle_a = turtle.Turtle()
@@ -82,7 +94,7 @@ wn.onkeypress(paddle_b_up, "Up")
 wn.onkeypress(paddle_b_down, "Down")
 
 # Main Loop
-while score_a < play_until and score_b < play_until:
+while round <= total_rounds: #score_a < play_until and score_b < play_until:
     wn.update()
 
     # Move the ball
@@ -103,23 +115,35 @@ while score_a < play_until and score_b < play_until:
         ball.dx *= -1
         score_a += 1
         pen.clear()
-        pen.write("Player 1: {}  Player 2: {}".format(score_a, score_b), align="center",
+        pen.write("Round{}: Player 1: {}  Player 2: {}".format(round, score_a, score_b), align="center",
                   font=("Comic Sans", 25, "normal"))
         if score_a == play_until:
             pen.goto(0, 0)
-            pen.write("Player 1: HAHA I won!", align="center", font=("Comic Sans", 50, "normal"))
+            say = "Haha I won!"
+            speak(say)
+            pen.write(f"Player 1: {say}", align="center", font=("Comic Sans", 50, "normal"))
+            pen.goto(0, 260)
+            round += 1
+            score_a = 0
+            score_b = 0
 
     if ball.xcor() < -390:
         ball.goto(0, 0)
         ball.dx *= -1
         score_b += 1
         pen.clear()
-        pen.write("Player 1: {}  Player 2: {}".format(score_a, score_b), align="center",
+        pen.write("Round {}: Player 1: {}  Player 2: {}".format(round, score_a, score_b), align="center",
                   font=("Comic Sans", 25, "normal"))
         if score_b == play_until:
             pen.goto(0, 0)
-            pen.write("Player 2: Dude why are you so invested into this? I don't even know where the heck we are.",
-                      align="center", font=("Comic Sans", 50, "normal"))
+            say = "Dude why are you so invested into this? I don't even know where the heck we are."
+            speak(say)
+            pen.write(f"Player 2: {say}",
+                      align="center", font=("Comic Sans", 15, "normal"))
+            pen.goto(0, 260)
+            round += 1
+            score_a = 0
+            score_b = 0
             #pyttsx3.speak("Dude why are you so invested into this? I don't even know where the heck we are.")
     # Paddle and Ball collision
     if (ball.xcor() > 340 and ball.xcor() < 350) and (
