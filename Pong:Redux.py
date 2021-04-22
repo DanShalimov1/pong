@@ -9,7 +9,7 @@ def speak(text):
     playsound.playsound(filename)
 
 play_until = 5
-total_rounds = 2
+total_rounds = 3
 say = ""
 wn = turtle.Screen()
 wn.title("Pong:Redux")
@@ -41,6 +41,18 @@ paddle_b.color("white")
 paddle_b.shapesize(stretch_wid=5, stretch_len=1)
 paddle_b.penup()
 paddle_b.goto(350, 0)
+
+#Obstacle
+obstacle = turtle.Turtle()
+obstacle.speed(0)
+obstacle.shape("square")
+obstacle.color("white")
+obstacle.shapesize(stretch_wid=5, stretch_len=1)
+obstacle.penup()
+obstacle.goto(0, 0)
+obstacle.hideturtle()
+obstacle.dy = 5
+obstacle.color("red")
 
 # Ball
 ball = turtle.Turtle()
@@ -97,6 +109,9 @@ wn.onkeypress(paddle_b_down, "Down")
 while round <= total_rounds: #score_a < play_until and score_b < play_until:
     wn.update()
 
+    #Move the obstacle
+    obstacle.sety(obstacle.ycor() + obstacle.dy)
+
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
     ball.sety(ball.ycor() + ball.dy)
@@ -109,6 +124,14 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
     if ball.ycor() < -290:
         ball.sety(-290)
         ball.dy *= -1
+
+    if obstacle.ycor() > 290:
+        obstacle.sety(290)
+        obstacle.dy *= -1
+
+    if obstacle.ycor() < -290:
+        obstacle.sety(-290)
+        obstacle.dy *= -1
 
     if ball.xcor() > 390:
         ball.goto(0, 0)
@@ -126,6 +149,7 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
             round += 1
             score_a = 0
             score_b = 0
+            obstacle.showturtle()
 
     if ball.xcor() < -390:
         ball.goto(0, 0)
@@ -154,5 +178,10 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
             ball.ycor() < paddle_a.ycor() + 40 and ball.ycor() > paddle_a.ycor() - 40):
         ball.setx(-340)
         ball.dx *= -1
+
+    #Obstacle and ball collision
+    if obstacle.isvisible() and ball.xcor() == 0 and (obstacle .ycor() + 40 > ball.ycor() > obstacle.ycor() -40):
+        ball.dx *=1
+
 
 turtle.exitonclick()
