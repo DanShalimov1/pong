@@ -1,3 +1,6 @@
+# URL to the video describing the project:
+https://github.com/DanShalimov1/pong/blob/main/GMT20210427-030437_Recording_1440x900.mp4
+
 # Preproposal
 
 ## What idea(s) do you have for your final project?
