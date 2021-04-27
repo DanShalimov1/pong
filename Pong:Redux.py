@@ -1,12 +1,29 @@
+#Project Title: Pong: Redux
+#Name: Daniel Shalimov
+#Year: Freshman
+
 import turtle
 from gtts import gTTS
 import playsound
+
 
 def speak(text):
     tts = gTTS(text=text, lang="en")
     filename = "voice.mp3"
     tts.save(filename)
     playsound.playsound(filename)
+
+player_a_messages = {
+     1: "HAHA I won!",
+     2: "Why are you so worried? It's not like we're dead or anything.",
+     3: "Come on man lighten up. Who needs doing taxes when we have this?"
+}
+player_b_messages = {
+    1: "Dude why are you so invested into this? I don't even know where the heck we are.",
+    2: "What is that red thing? And why do you not have a single care in the world?",
+    3: "So are you not gonna question that weird turtle thing or am I delusional?"
+}
+
 
 play_until = 5
 total_rounds = 3
@@ -46,13 +63,23 @@ paddle_b.goto(350, 0)
 obstacle = turtle.Turtle()
 obstacle.speed(0)
 obstacle.shape("square")
-obstacle.color("white")
 obstacle.shapesize(stretch_wid=5, stretch_len=1)
 obstacle.penup()
 obstacle.goto(0, 0)
 obstacle.hideturtle()
 obstacle.dy = 5
 obstacle.color("red")
+
+#Obstacle 2
+obstacle2 = turtle.Turtle()
+obstacle2.speed(0)
+obstacle2.penup()
+obstacle2.goto(0, 0)
+obstacle2.shape("turtle")
+obstacle2.hideturtle()
+obstacle2.dx = -5
+obstacle2.dy = -5
+obstacle2.color("green")
 
 # Ball
 ball = turtle.Turtle()
@@ -109,8 +136,10 @@ wn.onkeypress(paddle_b_down, "Down")
 while round <= total_rounds: #score_a < play_until and score_b < play_until:
     wn.update()
 
-    #Move the obstacle
+    #Move the obstacles
     obstacle.sety(obstacle.ycor() + obstacle.dy)
+    obstacle2.setx(obstacle2.xcor() - obstacle2.dx)
+    obstacle2.sety(obstacle2.ycor() - obstacle2.dy)
 
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
@@ -133,6 +162,22 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
         obstacle.sety(-290)
         obstacle.dy *= -1
 
+    if obstacle2.ycor() > 290:
+        obstacle2.sety(290)
+        obstacle2.dy *= -1
+
+    if obstacle2.ycor() < -290:
+        obstacle2.sety(-290)
+        obstacle2.dy *= -1
+
+    if obstacle2.xcor() > 390:
+        obstacle2.setx(390)
+        obstacle2.dx *= -1
+
+    if obstacle2.xcor() < -390:
+        obstacle2.setx(-390)
+        obstacle2.dx *= -1
+
     if ball.xcor() > 390:
         ball.goto(0, 0)
         ball.dx *= -1
@@ -142,14 +187,16 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
                   font=("Comic Sans", 25, "normal"))
         if score_a == play_until:
             pen.goto(0, 0)
-            say = "Haha I won!"
+            say = player_a_messages[round]
             speak(say)
-            pen.write(f"Player 1: {say}", align="center", font=("Comic Sans", 50, "normal"))
+            pen.write(f"Player 1: {say}", align="center", font=("Comic Sans", 15, "normal"))
             pen.goto(0, 260)
             round += 1
             score_a = 0
             score_b = 0
             obstacle.showturtle()
+            if round > 2:
+                obstacle2.showturtle()
 
     if ball.xcor() < -390:
         ball.goto(0, 0)
@@ -160,7 +207,7 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
                   font=("Comic Sans", 25, "normal"))
         if score_b == play_until:
             pen.goto(0, 0)
-            say = "Dude why are you so invested into this? I don't even know where the heck we are."
+            say = player_b_messages[round]
             speak(say)
             pen.write(f"Player 2: {say}",
                       align="center", font=("Comic Sans", 15, "normal"))
@@ -168,7 +215,9 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
             round += 1
             score_a = 0
             score_b = 0
-            #pyttsx3.speak("Dude why are you so invested into this? I don't even know where the heck we are.")
+            obstacle.showturtle()
+            if round > 2:
+                obstacle2.showturtle()
     # Paddle and Ball collision
     if (ball.xcor() > 340 and ball.xcor() < 350) and (
             ball.ycor() < paddle_b.ycor() + 40 and ball.ycor() > paddle_b.ycor() - 40):
@@ -180,8 +229,18 @@ while round <= total_rounds: #score_a < play_until and score_b < play_until:
         ball.dx *= -1
 
     #Obstacle and ball collision
-    if obstacle.isvisible() and ball.xcor() == 0 and (obstacle .ycor() + 40 > ball.ycor() > obstacle.ycor() -40):
-        ball.dx *=1
+    if obstacle.isvisible() and ball.xcor() == 0 and (obstacle.ycor() + 40 > ball.ycor() > obstacle.ycor() -40):
+        ball.dx *= -1
+
+    if obstacle2.isvisible() and ball.xcor() == obstacle2.xcor() and obstacle2.ycor() == ball.ycor():
+        ball.dx *= -1
+        obstacle2.dx *= -1
+        ball.dy *= -1
+        obstacle2.dy *= -1
+
+    if obstacle2.isvisible() and obstacle2.xcor() == 0 and (obstacle.ycor() + 40 > obstacle2.ycor() > obstacle.ycor() -40):
+        obstacle2.dx *= -1
+        obstacle2.dy *= -1
 
 
 turtle.exitonclick()
